@@ -1,3 +1,4 @@
+
 <html>
 	<head>
 		<title>Color Histogram</title>
@@ -5,16 +6,19 @@
 	</head>
 	<body>
 
-
         <p>This is a Image</p>
         <p id="demo"></p>
         
+        <!--TODO Add image input options. Add image by file or link-->
         <div id="b">
-            <button id="all">All</button>
-            <button id="red">Red</button>
-            <button id="green">Green</button>
-            <button id="blue">Blue</button>
-            <input type="file" id="imageFile" accept=".png, .jpg, .jpeg"></input>
+                <input type="file" id="imageFile" accept=".png, .jpg, .jpeg"></input>
+            <form>
+                        <label><input type="radio" id="radioAll" name="mode" value="all" checked> All</label>
+                        <label><input type="radio" id="radioRed" name="mode" value="red" > Red</label>
+                        <label><input type="radio" id="radioGreen" name="mode" value="green"> Green</label>
+                        <label><input type="radio" id="radioBlue" name="mode" value="blue"> Blue</label>
+
+            </form>
         </div>
 
         <p id="demo2"></p>
