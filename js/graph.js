@@ -1,7 +1,62 @@
+//TODO tidy up the "TEST"-part
+//---LAST implemented thing
+
+function inputChange(){
+
+    var pictureInput = document.getElementById('fileInput').files[0];
+    img = document.getElementById("image");
+    var reader = new FileReader();
+    reader.addEventListener("load", function() { img.src = reader.result; });
+
+    c = document.getElementById("pictureCanvas");
+    
+    img.onload = function() {console.log(img.src); calc() }
+    
+    if (pictureInput) { reader.readAsDataURL(pictureInput); }
+
+}
+
+function calc (){
+    
+    ctx = c.getContext("2d");
+    c.height = img.height;
+    c.width = img.width;
+    console.log("width");
+    console.log(c.width);
+    ctx.drawImage(img, 0, 0);
+    imgData = ctx.getImageData(0, 0, c.width, c.height);
+        red = [];
+        green = [];
+        blue = [];
+        alpha = [];
+
+    //pushes 256 "0"s to each array                
+    for(var i = 0; i < 256; i++){
+        red.push(0);
+        blue.push(0);
+        green.push(0);
+        alpha.push(0);
+    }
+
+    //Loops through the data and increments each individual color pixel value by one each time it is represented
+    for (i = 0; i < imgData.data.length; i += 4) {
+        red[imgData.data[i]] += 1;
+        green[imgData.data[i+1]] += 1;
+        blue[imgData.data[i+2]] += 1;
+        alpha[imgData.data[i+3]] += 1;
+    }
+    //and lastly draws the graph
+        drawGraph();
+}
+
+//----END OF TEST
+
 //variables for the img
 var img = new Image();
-img.src = src="./test/land.jpg";
+img.src = document.getElementById("image").src;
 var c = document.getElementById("pictureCanvas");
+
+//TODO change this to calc() function????
 
 var ctx = c.getContext("2d");
 c.height = img.height;
@@ -46,7 +101,10 @@ document.getElementById("radioAll").addEventListener("click", drawGraph);
 document.getElementById("radioRed").addEventListener("click", drawGraph);
 document.getElementById("radioGreen").addEventListener("click", drawGraph);
 document.getElementById("radioBlue").addEventListener("click", drawGraph);
-
+//sets the values of the new picture and draws the graph
+document.getElementById("fileInput").addEventListener("change", inputChange);
+//refresh button draws the graph again
+document.getElementById("refreshButton").addEventListener("click", calc);
 
 //Function that draws the graphs.
 function drawGraph(){
@@ -92,7 +150,7 @@ function drawGraph(){
     //The Width scale 
     var widthScale = d3.scaleBand()
         .domain(red)
-        .paddingInner(.2)
+        .paddingInner(.3)
         .range([0, windowWidth]);
 
     //The Height scale for each individual color
@@ -161,15 +219,5 @@ function drawGraph(){
             .attr('x', function(d,i) {return xScale(i);})
             .attr('y', function(d) {return yScaleRed(d);});
 
-    //THIS IS THE OLD METHOD THAT STACKED BARS WITH THE SAME X VALUE ON TOP OF EACHOTHER
-    // bars.data(red)
-    //     .enter().append("rect")
-    //         .style("fill", "red")
-    //     .merge(bars)
-    //         .attr("opacity", opacityRed)
-    //         .attr("height", function (data) { return barScaleYRed(data) ;} )
-    //         .attr("width", function (data) { return barScaleXRed.bandwidth() ;} )
-    //         .attr("x", function (data) { return barScaleXRed(data);} )
-    //         .attr("y", function (data) { return height - barScaleYRed(data) ;} );
-            
-  }
+    //TODO add x and y axis to the graph
+}
