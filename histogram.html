@@ -9,9 +9,14 @@
         <p>This is a Image</p>
         <p id="demo"></p>
         
-        <!--TODO Add image input options. Add image by file or link-->
+        
+
         <div id="b">
-                <input type="file" id="imageFile" accept=".png, .jpg, .jpeg"></input>
+                <button id=refreshButton>Refresh graph</button>
+                <input type="file" id="fileInput" accept=".png, .jpg, .jpeg"></input>
+                Link:<input type="text" name="linkInput" >
+                <button id=submitLink>Submit</button>
+                <!--TODO ADD image input by link-->
             <form>
                         <label><input type="radio" id="radioAll" name="mode" value="all" checked> All</label>
                         <label><input type="radio" id="radioRed" name="mode" value="red" > Red</label>
@@ -22,7 +27,7 @@
         </div>
 
         <p id="demo2"></p>
-        <img id="test" src="./test/land.jpg" hidden="true">
+        <img id="image" src="./test/land.jpg" hidden="true">
         <canvas id="pictureCanvas"  style="border:1px solid white;">
         <canvas id="graph">
     
