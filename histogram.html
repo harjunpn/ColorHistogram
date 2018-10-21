@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>Color Histogram</title>
-		<script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js"></script>    
 	</head>
 	<body>
 
@@ -14,7 +14,7 @@
         <div id="b">
                 <button id=refreshButton>Refresh graph</button>
                 <input type="file" id="fileInput" accept=".png, .jpg, .jpeg"></input>
-                Link:<input type="text" name="linkInput" >
+                Link:<input type="text" id="linkInput" >
                 <button id=submitLink>Submit</button>
                 <!--TODO ADD image input by link-->
             <form>
@@ -28,15 +28,11 @@
 
         <p id="demo2"></p>
         <img id="image" src="./test/land.jpg" hidden="true">
+        <img id="image2" src="" crossorigin="anonymous" hidden="true">
         <canvas id="pictureCanvas"  style="border:1px solid white;">
         <canvas id="graph">
     
+    
             <script src="./js/graph.js"></script>
-    
-            <script>
-                
-    
-            </script>
-
 	</body>
 </html>

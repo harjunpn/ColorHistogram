@@ -1,41 +1,21 @@
-//TODO tidy up the "TEST"-part
-//---LAST implemented thing
-
-function inputChange(){
-
-    var pictureInput = document.getElementById('fileInput').files[0];
-    img = document.getElementById("image");
-    var reader = new FileReader();
-    reader.addEventListener("load", function() { img.src = reader.result; });
-
-    c = document.getElementById("pictureCanvas");
-    
-    img.onload = function() {console.log(img.src); calc() }
-    
-    if (pictureInput) { reader.readAsDataURL(pictureInput); }
-
-}
-
+//This function is used in inputChange and in linkChange to draw the picture and calculate the individual pixel values
 function calc (){
     
     ctx = c.getContext("2d");
     c.height = img.height;
     c.width = img.width;
-    console.log("width");
-    console.log(c.width);
     ctx.drawImage(img, 0, 0);
     imgData = ctx.getImageData(0, 0, c.width, c.height);
-        red = [];
-        green = [];
-        blue = [];
-        alpha = [];
+
+    red = [];
+    green = [];
+    blue = [];
 
     //pushes 256 "0"s to each array                
     for(var i = 0; i < 256; i++){
         red.push(0);
         blue.push(0);
         green.push(0);
-        alpha.push(0);
     }
 
     //Loops through the data and increments each individual color pixel value by one each time it is represented
@@ -43,20 +23,32 @@ function calc (){
         red[imgData.data[i]] += 1;
         green[imgData.data[i+1]] += 1;
         blue[imgData.data[i+2]] += 1;
-        alpha[imgData.data[i+3]] += 1;
     }
     //and lastly draws the graph
         drawGraph();
 }
 
-//----END OF TEST
+function inputChange(){
+
+    var pictureInput = document.getElementById('fileInput').files[0];
+    img = document.getElementById("image");
+    var reader = new FileReader();
+    if (pictureInput) { reader.readAsDataURL(pictureInput); }
+    reader.addEventListener("load", function() { img.src = reader.result;});
+    img.onload = function() {calc() }
+}
+
+function linkChange(){
+
+    img = document.getElementById("image2");
+    img.src = document.getElementById("linkInput").value;
+    img.onload = function() { ctx = c.getContext("2d"); calc(); };
+}
 
 //variables for the img
 var img = new Image();
 img.src = document.getElementById("image").src;
 var c = document.getElementById("pictureCanvas");
-
-//TODO change this to calc() function????
 
 var ctx = c.getContext("2d");
 c.height = img.height;
@@ -68,21 +60,18 @@ var imgData = ctx.getImageData(0, 0, c.width, c.height);
 var red = new Array;
 var green = new Array;
 var blue = new Array;
-var alpha = new Array;
 
 //pushes 256 "0"s to each array                
 for(var i = 0; i < 256; i++){
     red.push(0);
     blue.push(0);
     green.push(0);
-    alpha.push(0);
 }
 //Loops through the data and increments each individual color pixel value by one each time it is represented
 for (i = 0; i < imgData.data.length; i += 4) {
     red[imgData.data[i]] += 1;
     green[imgData.data[i+1]] += 1;
     blue[imgData.data[i+2]] += 1;
-    alpha[imgData.data[i+3]] += 1;
 }
 
 //creats the variable for 
@@ -93,18 +82,23 @@ var canvas = d3.select("#demo2")
 .append("svg")
 .style("background", "lightgrey");
 
+
 //draws the graph for the first time
 drawGraph();
 //draws the graph each time the window is resized
 window.addEventListener("resize", drawGraph);
+//sets the right opacity for the bars
 document.getElementById("radioAll").addEventListener("click", drawGraph);
 document.getElementById("radioRed").addEventListener("click", drawGraph);
 document.getElementById("radioGreen").addEventListener("click", drawGraph);
 document.getElementById("radioBlue").addEventListener("click", drawGraph);
-//sets the values of the new picture and draws the graph
+//sets the values of the new picture from the input and draws the graph
 document.getElementById("fileInput").addEventListener("change", inputChange);
 //refresh button draws the graph again
 document.getElementById("refreshButton").addEventListener("click", calc);
+//sets the values of the new picture from the link and draws the graph
+document.getElementById("submitLink").addEventListener("click", linkChange);
+
 
 //Function that draws the graphs.
 function drawGraph(){
@@ -113,9 +107,7 @@ function drawGraph(){
     var height = window.innerHeight * 0.65;
 
     //opacity variables 
-    var opacityRed = 0.8;
-    var opacityGreen = 0.8;
-    var opacityBlue = 0.8;
+    var opacityRed,opacityGreen,opacityBlue;
     var opacityMin = 0.1;
     var opacityDefaul = 0.8;
     var opacityMax = 1.0;
@@ -165,7 +157,7 @@ function drawGraph(){
     var heightScaleBlue = d3.scaleLinear()
         .domain([0, d3.max(blue)])
         .range([0,height]);
-    
+ 
     //The Y scale for each individual color
     var yScaleRed = d3.scaleLinear()
         .domain([0,d3.max(red)])
@@ -178,7 +170,6 @@ function drawGraph(){
     var yScaleBlue = d3.scaleLinear()
         .domain([0,d3.max(blue)])
         .range([height,0]);
-
 
     //Removes everything from the canvas so that it won't be duplicated
     canvas.selectAll("*").remove();
@@ -218,6 +209,4 @@ function drawGraph(){
             .attr('height', function(d) {return heightScaleRed(d);})
             .attr('x', function(d,i) {return xScale(i);})
             .attr('y', function(d) {return yScaleRed(d);});
-
-    //TODO add x and y axis to the graph
 }
