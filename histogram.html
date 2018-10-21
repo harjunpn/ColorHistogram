@@ -1,38 +1,35 @@
-
 <html>
 	<head>
 		<title>Color Histogram</title>
-        <script src="https://d3js.org/d3.v5.min.js"></script>    
+        <script src="https://d3js.org/d3.v5.min.js" type="text/javascript"></script>  
+        <link rel="stylesheet" href="css/styles.css">
 	</head>
 	<body>
+        <div id="content">
+            <h1>Color Histogram</h1>
 
-        <p>This is a Image</p>
-        <p id="demo"></p>
-        
-        
+            <div id="buttonDiv">
+                    <p id="info">Choose a file or give the image link:</p>
+                    <!--<button id=refreshButton>Refresh graph</button> -->
+                    <input type="file" id="fileInput" accept=".png, .jpg, .jpeg">
+                    Link: <input type="text" id="linkInput">
+                    <button id=submitLink>Submit</button>
+                    <p id="info">Show color:
+                    <label><input type="radio" id="radioAll" name="mode" value="all" checked> All</label>
+                    <label><input type="radio" id="radioRed" name="mode" value="red" > Red</label>
+                    <label><input type="radio" id="radioGreen" name="mode" value="green"> Green</label>
+                    <label><input type="radio" id="radioBlue" name="mode" value="blue"> Blue</label>
+                    </p>
+            </div>
 
-        <div id="b">
-                <button id=refreshButton>Refresh graph</button>
-                <input type="file" id="fileInput" accept=".png, .jpg, .jpeg"></input>
-                Link:<input type="text" id="linkInput" >
-                <button id=submitLink>Submit</button>
-                <!--TODO ADD image input by link-->
-            <form>
-                        <label><input type="radio" id="radioAll" name="mode" value="all" checked> All</label>
-                        <label><input type="radio" id="radioRed" name="mode" value="red" > Red</label>
-                        <label><input type="radio" id="radioGreen" name="mode" value="green"> Green</label>
-                        <label><input type="radio" id="radioBlue" name="mode" value="blue"> Blue</label>
-
-            </form>
+            <div id="imageDiv">
+                <p id="graphCanvas"></p>
+                <img id="image" src="./test/land.jpg" hidden="true">
+                <img id="image2" src="" crossorigin="anonymous" hidden="true">
+                <canvas id="pictureCanvas"  style="border:1px solid white;"></canvas>
+            </div>
         </div>
-
-        <p id="demo2"></p>
-        <img id="image" src="./test/land.jpg" hidden="true">
-        <img id="image2" src="" crossorigin="anonymous" hidden="true">
-        <canvas id="pictureCanvas"  style="border:1px solid white;">
-        <canvas id="graph">
     
-    
-            <script src="./js/graph.js"></script>
+        <script src="./js/graph.js"></script>
 	</body>
 </html>

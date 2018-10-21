@@ -1,3 +1,56 @@
+//variables for the img
+var img = new Image();
+img.src = document.getElementById("image").src;
+var c = document.getElementById("pictureCanvas");
+var ctx = c.getContext("2d");
+c.height = img.height;
+c.width = img.width;
+ctx.drawImage(img, 0, 0);
+var imgData = ctx.getImageData(0, 0, c.width, c.height);
+                
+//variables for the colorvalue arrays
+var red = new Array;
+var green = new Array;
+var blue = new Array;
+
+//pushes 256 "0"s to each array                
+for(var i = 0; i < 256; i++){
+    red.push(0);
+    blue.push(0);
+    green.push(0);
+}
+//Loops through the data and increments each individual color pixel value by one each time it is represented
+for (i = 0; i < imgData.data.length; i += 4) {
+    red[imgData.data[i]] += 1;
+    green[imgData.data[i+1]] += 1;
+    blue[imgData.data[i+2]] += 1;
+}
+
+//creats the variable for 
+var radioTest = d3.select('input[name="mode"]:checked').property("value");;
+
+//creates the Canvas svg
+var canvas = d3.select("#graphCanvas")
+.append("svg")
+.style("background", "lightgrey");
+
+//draws the graph for the first time
+drawGraph();
+//draws the graph each time the window is resized
+window.addEventListener("resize", drawGraph);
+//sets the right opacity for the bars
+document.getElementById("radioAll").addEventListener("click", drawGraph);
+document.getElementById("radioRed").addEventListener("click", drawGraph);
+document.getElementById("radioGreen").addEventListener("click", drawGraph);
+document.getElementById("radioBlue").addEventListener("click", drawGraph);
+//sets the values of the new picture from the input and draws the graph
+document.getElementById("fileInput").addEventListener("change", inputChange);
+//refresh button draws the graph again
+//document.getElementById("refreshButton").addEventListener("click", calc)
+//sets the values of the new picture from the link and draws the graph
+document.getElementById("submitLink").addEventListener("click", linkChange);
+
+
 //This function is used in inputChange and in linkChange to draw the picture and calculate the individual pixel values
 function calc (){
     
@@ -28,6 +81,7 @@ function calc (){
         drawGraph();
 }
 
+//function that takes the input and calculates the values and draws the graph
 function inputChange(){
 
     var pictureInput = document.getElementById('fileInput').files[0];
@@ -38,6 +92,7 @@ function inputChange(){
     img.onload = function() {calc() }
 }
 
+//function that takes the link and calculates the values and draws the graph
 function linkChange(){
 
     img = document.getElementById("image2");
@@ -45,65 +100,10 @@ function linkChange(){
     img.onload = function() { ctx = c.getContext("2d"); calc(); };
 }
 
-//variables for the img
-var img = new Image();
-img.src = document.getElementById("image").src;
-var c = document.getElementById("pictureCanvas");
-
-var ctx = c.getContext("2d");
-c.height = img.height;
-c.width = img.width;
-ctx.drawImage(img, 0, 0);
-var imgData = ctx.getImageData(0, 0, c.width, c.height);
-                
-//variables for the colorvalue arrays
-var red = new Array;
-var green = new Array;
-var blue = new Array;
-
-//pushes 256 "0"s to each array                
-for(var i = 0; i < 256; i++){
-    red.push(0);
-    blue.push(0);
-    green.push(0);
-}
-//Loops through the data and increments each individual color pixel value by one each time it is represented
-for (i = 0; i < imgData.data.length; i += 4) {
-    red[imgData.data[i]] += 1;
-    green[imgData.data[i+1]] += 1;
-    blue[imgData.data[i+2]] += 1;
-}
-
-//creats the variable for 
-var radioTest = d3.select('input[name="mode"]:checked').property("value");;
-
-//creates the Canvas svg
-var canvas = d3.select("#demo2")
-.append("svg")
-.style("background", "lightgrey");
-
-
-//draws the graph for the first time
-drawGraph();
-//draws the graph each time the window is resized
-window.addEventListener("resize", drawGraph);
-//sets the right opacity for the bars
-document.getElementById("radioAll").addEventListener("click", drawGraph);
-document.getElementById("radioRed").addEventListener("click", drawGraph);
-document.getElementById("radioGreen").addEventListener("click", drawGraph);
-document.getElementById("radioBlue").addEventListener("click", drawGraph);
-//sets the values of the new picture from the input and draws the graph
-document.getElementById("fileInput").addEventListener("change", inputChange);
-//refresh button draws the graph again
-document.getElementById("refreshButton").addEventListener("click", calc);
-//sets the values of the new picture from the link and draws the graph
-document.getElementById("submitLink").addEventListener("click", linkChange);
-
-
 //Function that draws the graphs.
 function drawGraph(){
     // Height and width variables. Width adjusted to the window width
-    var windowWidth = window.innerWidth * 0.9; 
+    var windowWidth = window.innerWidth * 0.95; 
     var height = window.innerHeight * 0.65;
 
     //opacity variables 
@@ -134,16 +134,18 @@ function drawGraph(){
     };
 
     //individual values for the bars so that they are scaled to the size of the graph
+    var paddingLeft = windowWidth * 0.055;
+
     //The x scale 
     var xScale = d3.scaleLinear()
         .domain([0,256])
-        .range([0,windowWidth]);
+        .range([paddingLeft,windowWidth]);
 
     //The Width scale 
     var widthScale = d3.scaleBand()
         .domain(red)
         .paddingInner(.3)
-        .range([0, windowWidth]);
+        .range([paddingLeft, windowWidth]);
 
     //The Height scale for each individual color
     var heightScaleRed = d3.scaleLinear()
@@ -171,6 +173,19 @@ function drawGraph(){
         .domain([0,d3.max(blue)])
         .range([height,0]);
 
+    var yAxisScale = yScaleRed;    
+    var maxValue = Math.max(d3.max(red), d3.max(green), d3.max(blue));
+    if(maxValue == d3.max(red)){
+        yAxisScale = yScaleRed
+    };
+    if(maxValue == d3.max(green)){
+        yAxisScale = yScaleGreen
+    };
+    if(maxValue == d3.max(blue)){
+        yAxisScale = yScaleBlue
+    }; 
+    
+
     //Removes everything from the canvas so that it won't be duplicated
     canvas.selectAll("*").remove();
     
@@ -182,6 +197,8 @@ function drawGraph(){
     //creation of the "bars" variable which is used to create the bars of the graph  
     var bars = canvas.selectAll("stapel");
 
+    // Add the y Axis
+  
     //Appends the canvas selection with all the bars
     bars.data(blue)
         .enter().append('rect')
@@ -190,7 +207,7 @@ function drawGraph(){
             .attr('width', function() {return widthScale.bandwidth();})
             .attr('height', function(d) {return heightScaleBlue(d);})
             .attr('x', function(d,i) {return xScale(i);})
-            .attr('y', function(d) {return yScaleBlue(d);});
+            .attr('y', yAxisScale);
 
     bars.data(green)
         .enter().append('rect')
@@ -199,7 +216,7 @@ function drawGraph(){
             .attr('width', function() {return widthScale.bandwidth();})
             .attr('height', function(d) {return heightScaleGreen(d);})
             .attr('x', function(d,i) {return xScale(i);})
-            .attr('y', function(d) {return yScaleGreen(d);});
+            .attr('y', yAxisScale);
 
     bars.data(red)
         .enter().append('rect')
@@ -208,5 +225,18 @@ function drawGraph(){
             .attr('width', function() {return widthScale.bandwidth();})
             .attr('height', function(d) {return heightScaleRed(d);})
             .attr('x', function(d,i) {return xScale(i);})
-            .attr('y', function(d) {return yScaleRed(d);});
+            .attr('y', yAxisScale);
+
+    canvas.append("g")
+        .attr("class", "y-axis")
+        .attr("transform", "translate(" + paddingLeft + ",0)")
+        .call(d3.axisLeft(yAxisScale).ticks(10).tickSizeInner(10).tickSizeOuter(2));
+
+    canvas.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Pixels");      
 }
