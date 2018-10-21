@@ -63,6 +63,7 @@ function calc (){
     red = [];
     green = [];
     blue = [];
+    
 
     //pushes 256 "0"s to each array                
     for(var i = 0; i < 256; i++){
@@ -134,18 +135,15 @@ function drawGraph(){
     };
 
     //individual values for the bars so that they are scaled to the size of the graph
+    //The width scale for each bar
     var paddingLeft = windowWidth * 0.055;
+    var barwidth = (windowWidth - paddingLeft)/256;
+    var margin = barwidth *0.2;
 
     //The x scale 
     var xScale = d3.scaleLinear()
         .domain([0,256])
         .range([paddingLeft,windowWidth]);
-
-    //The Width scale 
-    var widthScale = d3.scaleBand()
-        .domain(red)
-        .paddingInner(.3)
-        .range([paddingLeft, windowWidth]);
 
     //The Height scale for each individual color
     var heightScaleRed = d3.scaleLinear()
@@ -204,7 +202,8 @@ function drawGraph(){
         .enter().append('rect')
             .style('fill', "blue")
             .attr("opacity", opacityBlue)
-            .attr('width', function() {return widthScale.bandwidth();})
+            .attr('width', barwidth-margin)
+            .attr("class", "rectangle")
             .attr('height', function(d) {return heightScaleBlue(d);})
             .attr('x', function(d,i) {return xScale(i);})
             .attr('y', yAxisScale);
@@ -213,7 +212,7 @@ function drawGraph(){
         .enter().append('rect')
             .style('fill', "green")
             .attr("opacity", opacityGreen)
-            .attr('width', function() {return widthScale.bandwidth();})
+            .attr('width', barwidth-margin)
             .attr('height', function(d) {return heightScaleGreen(d);})
             .attr('x', function(d,i) {return xScale(i);})
             .attr('y', yAxisScale);
@@ -222,7 +221,7 @@ function drawGraph(){
         .enter().append('rect')
             .style('fill', "red")
             .attr("opacity", opacityRed)
-            .attr('width', function() {return widthScale.bandwidth();})
+            .attr('width', barwidth-margin)
             .attr('height', function(d) {return heightScaleRed(d);})
             .attr('x', function(d,i) {return xScale(i);})
             .attr('y', yAxisScale);
